@@ -45,3 +45,18 @@
 
 > อยากให้คนอื่นในทีมใช้ด้วย: ให้แอดมินเพิ่มอีเมล Google ของเขาในช่อง email ของ
 > สมาชิก (นาย/อาร์ม/ชมพู่) แล้วพอเขาล็อกอินครั้งแรกระบบจะผูกให้อัตโนมัติ
+
+---
+
+## รันในเครื่องหลังเน็ตบริษัท (Zscaler)
+เน็ตบริษัทใช้ **Zscaler** ดักเซ็น HTTPS ด้วย root CA ของตัวเอง — Node จะต่อ Supabase
+ไม่ได้ (error `UNABLE_TO_GET_ISSUER_CERT_LOCALLY` / "fetch failed" ตอนล็อกอิน)
+แก้ครั้งเดียวต่อเครื่อง:
+
+```bash
+npm run setup:ca   # ดึง Zscaler root CA จาก keychain มาไว้ที่ certs/local-ca.pem
+npm run dev        # dev script ตั้ง NODE_EXTRA_CA_CERTS ให้เอง
+```
+
+ไฟล์ `certs/local-ca.pem` ถูก gitignore ไว้ (เฉพาะเครื่อง) — เครื่องที่ไม่ได้อยู่หลัง
+proxy ไม่ต้องรัน setup นี้ก็ได้
