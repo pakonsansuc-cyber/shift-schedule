@@ -1,4 +1,4 @@
-import { PEOPLE } from "@/lib/mock-data";
+import { useSchedule } from "./ScheduleProvider";
 import { cn } from "@/lib/cn";
 
 interface Props {
@@ -7,9 +7,10 @@ interface Props {
 }
 
 export function PersonFilter({ value, onChange }: Props) {
+  const { members } = useSchedule();
   return (
     <div className="flex flex-wrap items-center gap-1.5 rounded-xl border border-border bg-surface p-1.5 shadow-sm">
-      {PEOPLE.map((p) => {
+      {members.map((p) => {
         const active = value === p.id;
         return (
           <button

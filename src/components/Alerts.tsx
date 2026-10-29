@@ -1,5 +1,5 @@
 import type { Assignment } from "@/lib/types";
-import { PEOPLE, personById } from "@/lib/mock-data";
+import { useSchedule } from "./ScheduleProvider";
 import { consecutiveNightStreaks, morningGaps } from "@/lib/stats";
 
 interface Props {
@@ -9,12 +9,13 @@ interface Props {
 }
 
 export function Alerts({ assignments, year, month0 }: Props) {
+  const { members, personById } = useSchedule();
   const gaps = morningGaps(assignments, year, month0);
   const streaks = consecutiveNightStreaks(
     assignments,
     year,
     month0,
-    PEOPLE.map((p) => p.id),
+    members.map((p) => p.id),
   );
 
   if (gaps.length === 0 && streaks.length === 0) return null;

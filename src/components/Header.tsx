@@ -1,6 +1,13 @@
+"use client";
+
+import { useSchedule } from "./ScheduleProvider";
 import { ThemeToggle } from "./ThemeToggle";
+import { SignOutButton } from "./SignOutButton";
 
 export function Header() {
+  const { currentMemberId, isAdmin, personById } = useSchedule();
+  const me = currentMemberId ? personById(currentMemberId) : undefined;
+
   return (
     <header className="flex items-start justify-between gap-4">
       <div className="flex items-center gap-3">
@@ -14,15 +21,29 @@ export function Header() {
           <h1 className="text-xl font-bold tracking-tight text-text">
             Shift Schedule
           </h1>
-          <p className="text-sm text-text-muted">ตารางกะงานของทีม</p>
+          <p className="text-sm text-text-muted">
+            {me ? (
+              <>
+                <span className="inline-flex items-center gap-1.5">
+                  <span className="size-2 rounded-full" style={{ background: me.color }} />
+                  {me.name}
+                </span>
+                {isAdmin && (
+                  <span className="ml-2 rounded bg-accent-soft px-1.5 py-0.5 text-[11px] font-semibold text-accent">
+                    แอดมิน
+                  </span>
+                )}
+              </>
+            ) : (
+              "ตารางกะงานของทีม"
+            )}
+          </p>
         </div>
       </div>
 
       <div className="flex items-center gap-2">
-        <span className="hidden rounded-full border border-border bg-surface px-2.5 py-1 text-xs font-medium text-text-muted sm:inline">
-          ข้อมูลตัวอย่าง
-        </span>
         <ThemeToggle />
+        <SignOutButton />
       </div>
     </header>
   );

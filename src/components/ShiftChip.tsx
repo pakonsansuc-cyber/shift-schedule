@@ -1,6 +1,6 @@
 import type { Assignment } from "@/lib/types";
 import { SHIFT_TYPES, shiftColor, shiftSoftColor } from "@/lib/shifts";
-import { personById } from "@/lib/mock-data";
+import { useSchedule } from "./ScheduleProvider";
 import { cn } from "@/lib/cn";
 
 interface Props {
@@ -10,6 +10,7 @@ interface Props {
 }
 
 export function ShiftChip({ assignment, dimmed, size = "sm" }: Props) {
+  const { personById } = useSchedule();
   const person = personById(assignment.personId);
   const shift = SHIFT_TYPES[assignment.shift];
   if (!person) return null;

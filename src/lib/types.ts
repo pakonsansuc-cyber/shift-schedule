@@ -21,6 +21,7 @@ export interface Person {
   /** Dot/accent color (any CSS color) used to identify the person */
   color: string;
   role: "admin" | "member";
+  email?: string;
 }
 
 export interface Assignment {

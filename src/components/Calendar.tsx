@@ -1,12 +1,8 @@
 import type { Assignment, ShiftTypeId } from "@/lib/types";
-import {
-  buildMonthGrid,
-  holidayFor,
-  THAI_WEEKDAYS,
-} from "@/lib/calendar";
+import { buildMonthGrid, THAI_WEEKDAYS } from "@/lib/calendar";
 import { assignmentsOn } from "@/lib/stats";
 import { SHIFT_ORDER } from "@/lib/shifts";
-import { personById } from "@/lib/mock-data";
+import { useSchedule } from "./ScheduleProvider";
 import { ShiftChip } from "./ShiftChip";
 import { cn } from "@/lib/cn";
 
@@ -29,8 +25,10 @@ export function Calendar({
   nameQuery = "",
   onDayClick,
 }: Props) {
+  const { personById, holidays } = useSchedule();
   const query = nameQuery.trim().toLowerCase();
   const cells = buildMonthGrid(year, month0);
+  const holidayMap = new Map(holidays.map((h) => [h.date, h.name]));
 
   return (
     <div className="overflow-hidden rounded-card border border-border bg-surface shadow-sm">
@@ -58,7 +56,7 @@ export function Calendar({
                   SHIFT_ORDER.indexOf(a.shift) - SHIFT_ORDER.indexOf(b.shift),
               )
             : [];
-          const holiday = cell.inMonth ? holidayFor(cell.date) : undefined;
+          const holiday = cell.inMonth ? holidayMap.get(cell.date) : undefined;
           const isWeekend = cell.weekday === 0 || cell.weekday === 6;
           const empty = cell.inMonth && dayAssignments.length === 0;
 
@@ -96,7 +94,7 @@ export function Calendar({
 
               {holiday && (
                 <span className="truncate rounded bg-shift-gap-soft px-1 py-0.5 text-[10px] font-medium text-danger">
-                  {holiday.name}
+                  {holiday}
                 </span>
               )}
 

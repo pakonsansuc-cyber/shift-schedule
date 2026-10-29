@@ -1,5 +1,5 @@
 import type { Assignment } from "@/lib/types";
-import { personById } from "@/lib/mock-data";
+import { useSchedule } from "./ScheduleProvider";
 import { SHIFT_TYPES, shiftColor } from "@/lib/shifts";
 import {
   nextLongBreak,
@@ -10,18 +10,28 @@ import { daysInMonth, THAI_MONTHS, toISODate } from "@/lib/calendar";
 
 interface Props {
   assignments: Assignment[];
-  userId: string;
+  userId: string | null;
   year: number;
   month0: number;
 }
 
 function thaiDate(iso: string): string {
-  const [y, m, d] = iso.split("-").map(Number);
+  const [, m, d] = iso.split("-").map(Number);
   return `${d} ${THAI_MONTHS[m - 1]}`;
 }
 
 export function PersonalCards({ assignments, userId, year, month0 }: Props) {
-  const person = personById(userId);
+  const { personById } = useSchedule();
+  const person = userId ? personById(userId) : undefined;
+
+  if (!userId || !person) {
+    return (
+      <div className="rounded-card border border-border bg-surface p-4 text-sm text-text-muted shadow-sm">
+        บัญชีของคุณยังไม่ได้ผูกกับสมาชิกในทีม — ให้แอดมินเพิ่มอีเมลของคุณในรายชื่อสมาชิก
+        แล้วการ์ดสรุปส่วนตัวจะปรากฏที่นี่
+      </div>
+    );
+  }
   const monthStart = toISODate(year, month0, 1);
   const next = nextShiftFor(assignments, userId, monthStart);
   const worked = totalForPerson(assignments, userId, year, month0);
