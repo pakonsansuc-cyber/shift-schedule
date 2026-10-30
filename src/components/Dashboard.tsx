@@ -12,6 +12,7 @@ import { Legend } from "./Legend";
 import { Calendar } from "./Calendar";
 import { SearchBox } from "./SearchBox";
 import { DayEditor } from "./DayEditor";
+import { StatsPanel } from "./StatsPanel";
 
 /** Pick the month to open on: the most recent month that has data, else today. */
 function initialMonth(dates: string[]): { year: number; month0: number } {
@@ -33,6 +34,7 @@ export function Dashboard() {
   const [shiftFilter, setShiftFilter] = useState<ShiftTypeId | null>(null);
   const [search, setSearch] = useState("");
   const [editDate, setEditDate] = useState<string | null>(null);
+  const [showStats, setShowStats] = useState(false);
 
   function shiftMonth(delta: number) {
     const d = new Date(year, month0 + delta, 1);
@@ -66,7 +68,18 @@ export function Dashboard() {
             onNext={() => shiftMonth(1)}
             onToday={goToday}
           />
-          <SearchBox value={search} onChange={setSearch} />
+          <div className="flex items-center gap-2">
+            <SearchBox value={search} onChange={setSearch} />
+            <button
+              onClick={() => setShowStats(true)}
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-2 text-sm font-medium text-text-muted transition-colors hover:bg-surface-2 hover:text-text"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 3v18h18M7 16v-5M12 16V8M17 16v-9" />
+              </svg>
+              <span className="hidden sm:inline">สถิติ</span>
+            </button>
+          </div>
         </div>
 
         <PersonFilter value={personFilter} onChange={setPersonFilter} />
@@ -92,6 +105,13 @@ export function Dashboard() {
 
       {editDate && (
         <DayEditor date={editDate} onClose={() => setEditDate(null)} />
+      )}
+      {showStats && (
+        <StatsPanel
+          year={year}
+          month0={month0}
+          onClose={() => setShowStats(false)}
+        />
       )}
 
       <footer className="mt-8 text-center text-xs text-text-subtle">
