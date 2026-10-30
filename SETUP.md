@@ -60,3 +60,18 @@ npm run dev        # dev script ตั้ง NODE_EXTRA_CA_CERTS ให้เอ
 
 ไฟล์ `certs/local-ca.pem` ถูก gitignore ไว้ (เฉพาะเครื่อง) — เครื่องที่ไม่ได้อยู่หลัง
 proxy ไม่ต้องรัน setup นี้ก็ได้
+
+---
+
+## เปิดใช้ AI สแกนตาราง (ไม่บังคับ)
+ฟีเจอร์ "สแกน AI" ใช้ Claude vision อ่านรูปตารางแล้วแปลงเป็นข้อมูล ต้องมี API key:
+1. สมัคร/สร้างคีย์ที่ https://console.anthropic.com/
+2. ใส่ใน `.env.local`:
+   ```
+   ANTHROPIC_API_KEY=sk-ant-...
+   ANTHROPIC_MODEL=claude-sonnet-5-5   # เปลี่ยนรุ่นได้
+   ```
+3. รีสตาร์ท `npm run dev`
+
+ถ้ายังไม่ใส่คีย์ ปุ่ม "สแกน AI" จะขึ้นข้อความแจ้งว่ายังไม่ได้ตั้งค่า
+(คีย์อยู่ฝั่ง server เท่านั้น ไม่หลุดออกเบราว์เซอร์ และมีค่าใช้จ่ายตามการใช้งานของ Anthropic)

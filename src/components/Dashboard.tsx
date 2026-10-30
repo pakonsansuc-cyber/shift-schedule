@@ -15,6 +15,7 @@ import { DayEditor } from "./DayEditor";
 import { StatsPanel } from "./StatsPanel";
 import { ExportMenu } from "./ExportMenu";
 import { SwapPanel } from "./SwapPanel";
+import { ScanPanel } from "./ScanPanel";
 
 /** Pick the month to open on: the most recent month that has data, else today. */
 function initialMonth(dates: string[]): { year: number; month0: number } {
@@ -38,6 +39,7 @@ export function Dashboard() {
   const [editDate, setEditDate] = useState<string | null>(null);
   const [showStats, setShowStats] = useState(false);
   const [showSwap, setShowSwap] = useState(false);
+  const [showScan, setShowScan] = useState(false);
 
   function shiftMonth(delta: number) {
     const d = new Date(year, month0 + delta, 1);
@@ -91,6 +93,17 @@ export function Dashboard() {
               </svg>
               <span className="hidden sm:inline">แลกกะ</span>
             </button>
+            {isAdmin && (
+              <button
+                onClick={() => setShowScan(true)}
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-accent/40 bg-accent-soft px-3 py-2 text-sm font-medium text-accent transition-colors hover:bg-accent-soft/70"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 12h10" />
+                </svg>
+                <span className="hidden sm:inline">สแกน AI</span>
+              </button>
+            )}
             <ExportMenu year={year} month0={month0} captureId="calendar-capture" />
           </div>
         </div>
@@ -129,6 +142,13 @@ export function Dashboard() {
         />
       )}
       {showSwap && <SwapPanel onClose={() => setShowSwap(false)} />}
+      {showScan && (
+        <ScanPanel
+          year={year}
+          month0={month0}
+          onClose={() => setShowScan(false)}
+        />
+      )}
 
       <footer className="mt-8 text-center text-xs text-text-subtle">
         สร้างด้วย Next.js + Supabase · ข้อมูลเรียลไทม์
