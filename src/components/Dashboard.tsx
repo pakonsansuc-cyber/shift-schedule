@@ -14,6 +14,7 @@ import { SearchBox } from "./SearchBox";
 import { DayEditor } from "./DayEditor";
 import { StatsPanel } from "./StatsPanel";
 import { ExportMenu } from "./ExportMenu";
+import { SwapPanel } from "./SwapPanel";
 
 /** Pick the month to open on: the most recent month that has data, else today. */
 function initialMonth(dates: string[]): { year: number; month0: number } {
@@ -36,6 +37,7 @@ export function Dashboard() {
   const [search, setSearch] = useState("");
   const [editDate, setEditDate] = useState<string | null>(null);
   const [showStats, setShowStats] = useState(false);
+  const [showSwap, setShowSwap] = useState(false);
 
   function shiftMonth(delta: number) {
     const d = new Date(year, month0 + delta, 1);
@@ -80,6 +82,15 @@ export function Dashboard() {
               </svg>
               <span className="hidden sm:inline">สถิติ</span>
             </button>
+            <button
+              onClick={() => setShowSwap(true)}
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-2 text-sm font-medium text-text-muted transition-colors hover:bg-surface-2 hover:text-text"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M7 10l-4 4 4 4M3 14h14M17 14l4-4-4-4M21 10H7" />
+              </svg>
+              <span className="hidden sm:inline">แลกกะ</span>
+            </button>
             <ExportMenu year={year} month0={month0} captureId="calendar-capture" />
           </div>
         </div>
@@ -117,6 +128,7 @@ export function Dashboard() {
           onClose={() => setShowStats(false)}
         />
       )}
+      {showSwap && <SwapPanel onClose={() => setShowSwap(false)} />}
 
       <footer className="mt-8 text-center text-xs text-text-subtle">
         สร้างด้วย Next.js + Supabase · ข้อมูลเรียลไทม์

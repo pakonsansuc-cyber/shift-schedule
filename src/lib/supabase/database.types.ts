@@ -141,6 +141,7 @@ export type Database = {
     };
     Views: { [_ in never]: never };
     Functions: {
+      accept_swap: { Args: { swap_id: string }; Returns: undefined };
       claim_member: { Args: Record<string, never>; Returns: string };
       current_member_id: { Args: Record<string, never>; Returns: string };
       is_admin: { Args: Record<string, never>; Returns: boolean };
