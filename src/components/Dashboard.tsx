@@ -11,6 +11,7 @@ import { PersonFilter } from "./PersonFilter";
 import { Legend } from "./Legend";
 import { Calendar } from "./Calendar";
 import { SearchBox } from "./SearchBox";
+import { DayEditor } from "./DayEditor";
 
 /** Pick the month to open on: the most recent month that has data, else today. */
 function initialMonth(dates: string[]): { year: number; month0: number } {
@@ -24,13 +25,14 @@ function initialMonth(dates: string[]): { year: number; month0: number } {
 }
 
 export function Dashboard() {
-  const { assignments, currentMemberId } = useSchedule();
+  const { assignments, currentMemberId, isAdmin } = useSchedule();
   const [{ year, month0 }, setMonth] = useState(() =>
     initialMonth(assignments.map((a) => a.date)),
   );
   const [personFilter, setPersonFilter] = useState<string | "all">("all");
   const [shiftFilter, setShiftFilter] = useState<ShiftTypeId | null>(null);
   const [search, setSearch] = useState("");
+  const [editDate, setEditDate] = useState<string | null>(null);
 
   function shiftMonth(delta: number) {
     const d = new Date(year, month0 + delta, 1);
@@ -68,7 +70,14 @@ export function Dashboard() {
         </div>
 
         <PersonFilter value={personFilter} onChange={setPersonFilter} />
-        <Legend value={shiftFilter} onChange={setShiftFilter} />
+        <div className="flex items-center justify-between gap-2">
+          <Legend value={shiftFilter} onChange={setShiftFilter} />
+          {isAdmin && (
+            <span className="shrink-0 text-xs text-text-subtle">
+              คลิกวันเพื่อแก้กะ
+            </span>
+          )}
+        </div>
 
         <Calendar
           assignments={assignments}
@@ -77,8 +86,13 @@ export function Dashboard() {
           personFilter={personFilter}
           shiftFilter={shiftFilter}
           nameQuery={search}
+          onDayClick={isAdmin ? setEditDate : undefined}
         />
       </div>
+
+      {editDate && (
+        <DayEditor date={editDate} onClose={() => setEditDate(null)} />
+      )}
 
       <footer className="mt-8 text-center text-xs text-text-subtle">
         สร้างด้วย Next.js + Supabase · ข้อมูลเรียลไทม์
