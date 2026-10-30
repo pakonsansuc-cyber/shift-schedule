@@ -13,6 +13,7 @@ import { Calendar } from "./Calendar";
 import { SearchBox } from "./SearchBox";
 import { DayEditor } from "./DayEditor";
 import { StatsPanel } from "./StatsPanel";
+import { ExportMenu } from "./ExportMenu";
 
 /** Pick the month to open on: the most recent month that has data, else today. */
 function initialMonth(dates: string[]): { year: number; month0: number } {
@@ -79,6 +80,7 @@ export function Dashboard() {
               </svg>
               <span className="hidden sm:inline">สถิติ</span>
             </button>
+            <ExportMenu year={year} month0={month0} captureId="calendar-capture" />
           </div>
         </div>
 
@@ -92,15 +94,17 @@ export function Dashboard() {
           )}
         </div>
 
-        <Calendar
-          assignments={assignments}
-          year={year}
-          month0={month0}
-          personFilter={personFilter}
-          shiftFilter={shiftFilter}
-          nameQuery={search}
-          onDayClick={isAdmin ? setEditDate : undefined}
-        />
+        <div id="calendar-capture">
+          <Calendar
+            assignments={assignments}
+            year={year}
+            month0={month0}
+            personFilter={personFilter}
+            shiftFilter={shiftFilter}
+            nameQuery={search}
+            onDayClick={isAdmin ? setEditDate : undefined}
+          />
+        </div>
       </div>
 
       {editDate && (
