@@ -16,6 +16,7 @@ import { StatsPanel } from "./StatsPanel";
 import { ExportMenu } from "./ExportMenu";
 import { SwapPanel } from "./SwapPanel";
 import { ScanPanel } from "./ScanPanel";
+import { BuddiesPanel } from "./BuddiesPanel";
 
 /** Pick the month to open on: the most recent month that has data, else today. */
 function initialMonth(dates: string[]): { year: number; month0: number } {
@@ -40,6 +41,7 @@ export function Dashboard() {
   const [showStats, setShowStats] = useState(false);
   const [showSwap, setShowSwap] = useState(false);
   const [showScan, setShowScan] = useState(false);
+  const [showBuddies, setShowBuddies] = useState(false);
 
   function shiftMonth(delta: number) {
     const d = new Date(year, month0 + delta, 1);
@@ -84,6 +86,17 @@ export function Dashboard() {
               </svg>
               <span className="hidden sm:inline">สถิติ</span>
             </button>
+            {currentMemberId && (
+              <button
+                onClick={() => setShowBuddies(true)}
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-2 text-sm font-medium text-text-muted transition-colors hover:bg-surface-2 hover:text-text"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+                <span className="hidden sm:inline">เข้ากับใคร</span>
+              </button>
+            )}
             <button
               onClick={() => setShowSwap(true)}
               className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-2 text-sm font-medium text-text-muted transition-colors hover:bg-surface-2 hover:text-text"
@@ -142,6 +155,13 @@ export function Dashboard() {
         />
       )}
       {showSwap && <SwapPanel onClose={() => setShowSwap(false)} />}
+      {showBuddies && (
+        <BuddiesPanel
+          year={year}
+          month0={month0}
+          onClose={() => setShowBuddies(false)}
+        />
+      )}
       {showScan && (
         <ScanPanel
           year={year}

@@ -1,5 +1,98 @@
 import type { Assignment, ShiftTypeId } from "./types";
 import { daysInMonth, toISODate } from "./calendar";
+import { SHIFT_TYPES } from "./shifts";
+
+/** "morning" (wfh/tdpk) or "night" — two people on the same period share a shift. */
+export function periodOf(shift: ShiftTypeId): "morning" | "night" {
+  return SHIFT_TYPES[shift].period;
+}
+
+export interface Shiftmate {
+  personId: string;
+  shift: ShiftTypeId;
+}
+
+/**
+ * Who else is on the same shift (same date + same period) as `memberId`.
+ * Returns the member's own shift that day plus the teammates sharing it,
+ * or null if the member isn't working that day.
+ */
+export function shiftmatesOn(
+  assignments: Assignment[],
+  memberId: string,
+  date: string,
+): { shift: ShiftTypeId; mates: Shiftmate[] } | null {
+  const mine = assignments.find(
+    (a) => a.personId === memberId && a.date === date,
+  );
+  if (!mine) return null;
+  const myPeriod = periodOf(mine.shift);
+  const mates = assignments
+    .filter(
+      (a) =>
+        a.date === date &&
+        a.personId !== memberId &&
+        periodOf(a.shift) === myPeriod,
+    )
+    .map((a) => ({ personId: a.personId, shift: a.shift }));
+  return { shift: mine.shift, mates };
+}
+
+export type MatchStatus =
+  | "together" // both work, same period
+  | "crossShift" // both work, different period
+  | "mineOnly"
+  | "theirsOnly"
+  | "bothOff";
+
+export interface DayMatch {
+  day: number;
+  date: string;
+  mine: ShiftTypeId | null;
+  theirs: ShiftTypeId | null;
+  status: MatchStatus;
+}
+
+/** Day-by-day comparison of the user's month against one friend. */
+export function compareWithFriend(
+  assignments: Assignment[],
+  userId: string,
+  friendId: string,
+  year: number,
+  month0: number,
+): { days: DayMatch[]; together: number; bothOff: number } {
+  const total = daysInMonth(year, month0);
+  const days: DayMatch[] = [];
+  let together = 0;
+  let bothOff = 0;
+
+  for (let d = 1; d <= total; d++) {
+    const date = toISODate(year, month0, d);
+    const mine =
+      assignments.find((a) => a.personId === userId && a.date === date)
+        ?.shift ?? null;
+    const theirs =
+      assignments.find((a) => a.personId === friendId && a.date === date)
+        ?.shift ?? null;
+
+    let status: MatchStatus;
+    if (mine && theirs) {
+      status = periodOf(mine) === periodOf(theirs) ? "together" : "crossShift";
+    } else if (mine) {
+      status = "mineOnly";
+    } else if (theirs) {
+      status = "theirsOnly";
+    } else {
+      status = "bothOff";
+    }
+    if (status === "together") together++;
+    if (status === "bothOff") bothOff++;
+
+    days.push({ day: d, date, mine, theirs, status });
+  }
+
+  return { days, together, bothOff };
+}
 
 /** All assignments on a given ISO date. */
 export function assignmentsOn(
